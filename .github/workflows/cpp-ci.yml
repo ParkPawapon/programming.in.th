@@ -1,0 +1,45 @@
+name: C++ CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  cpp-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show compiler version
+        run: g++ --version
+
+      - name: Compile all C++ files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p /tmp/cpp-build
+          shopt -s globstar nullglob
+
+          files=( *.cpp **/*.cpp )
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No C++ files found"
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Compiling $file"
+            output="/tmp/cpp-build/$(echo "$file" | tr '/ ' '__')"
+            g++ -std=c++17 -O2 -pipe -Wall -Wextra -pedantic "$file" -o "$output"
+          done

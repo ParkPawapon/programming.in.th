@@ -1,0 +1,10 @@
+.DS_Store
+
+.vscode/*
+!.vscode/extensions.json
+
+*.out
+*.exe
+*.o
+build/
+dist/
